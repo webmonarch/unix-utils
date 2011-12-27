@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for user in $(cut -f1 -d: /etc/passwd); do 
+  CMD="crontab -u $user -l"
+
+  if $CMD > /dev/null; then
+    echo $user
+    $CMD
+  fi
+done
