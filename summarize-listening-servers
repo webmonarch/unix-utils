@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#
+# Simple script to report on listenting TCP/IP servers running
+# on the machine (sorted by port number)
+#
+# For best results, run as root
+#
+
+netstat -tpnl | sort -k2 -n -t :
