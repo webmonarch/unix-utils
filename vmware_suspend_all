@@ -1,0 +1,4 @@
+#!/bin/bash
+
+vmrun list
+vmrun list | tail -n +2 | xargs -n1 -IVM --no-run-if-empty vmrun suspend "VM"

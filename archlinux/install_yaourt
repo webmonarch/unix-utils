@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+BUILD_DIR=/tmp/install_yaourt_`timestamp`
+YAOURT_BUILD_DIR=$BUILD_DIR/yaourt
+PACKAGE_QUERY_BUILD_DIR=$BUILD_DIR/package-query
+
+mkdir -p "$YAOURT_BUILD_DIR"
+mkdir -p "$PACKAGE_QUERY_BUILD_DIR"
+
+# build package-query
+
+echo Building package-query in $PACKAGE_QUERY_BUILD_DIR
+
+cd $PACKAGE_QUERY_BUILD_DIR
+wget 'http://aur.archlinux.org/packages/pa/package-query/PKGBUILD'
+makepkg -s
+sudo pacman -U *.pkg.*
+
+
+# build yaourt
+
+echo Building yaourt in $YAOURT_BUILD_DIR
+
+cd $YAOURT_BUILD_DIR
+wget 'http://aur.archlinux.org/packages/ya/yaourt/PKGBUILD'
+makepkg -s
+sudo pacman -U *.pkg.*

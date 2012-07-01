@@ -1,0 +1,4 @@
+#!/bin/bash
+
+find /var/cache/pacman/pkg -type f -mtime +90 -print0 | \
+	xargs -0 -n10 --no-run-if-empty sudo rm
