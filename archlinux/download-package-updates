@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#
+# Simple script that will download updated packages (without installing them)
+# so they are locally available for the eventual update
+#
+# Intented to be run via cron.
+#
+
+pacman -Suyqw --noprogress --noconfirm
