@@ -5,7 +5,10 @@ set -e
 EXISTING_MIRRORFILE=/etc/pacman.d/mirrorlist
 TMP_MIRRORFILE=`mktemp`
 
-curl 'http://www.archlinux.org/mirrorlist/?country=Any&country=United+States&protocol=http&ip_version=4&use_mirror_status=on' | sed 's/^#Server/Server/' | sed 's/^## Score.*//' > "$TMP_MIRRORFILE"
+country='US'
+url="https://www.archlinux.org/mirrorlist/?country=$country&protocol=ftp&protocol=http&ip_version=4&use_mirror_status=on"
+
+curl "$url" | sed 's/^#Server/Server/' | sed 's/^## Score.*//' > "$TMP_MIRRORFILE"
 
 sudo cp "$EXISTING_MIRRORFILE" "${EXISTING_MIRRORFILE}.`timestamp`"
 sudo sh -c "rankmirrors \"$TMP_MIRRORFILE\" | tee \"$EXISTING_MIRRORFILE\""
