@@ -1,4 +1,4 @@
-#!/bin/env ruby
+#!/usr/bin/env ruby
 
 # Simple script that parses the interface usage statistics
 # as returned by 'ip -s link'
