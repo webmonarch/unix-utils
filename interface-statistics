@@ -1,11 +1,14 @@
 #!/usr/bin/env ruby
 
+#
 # Simple script that parses the interface usage statistics
 # as returned by 'ip -s link'
 #
 # This script should be useful for machine statistic collection
 # ie: ethernet bytes transmitted and received, etc.
+#
 
+# helper assert function
 def assert(should_be_true, message)
     if !should_be_true
         STDERR.puts message
@@ -13,6 +16,30 @@ def assert(should_be_true, message)
     end
 end
 
+#
+# Parse command options
+#
+
+require 'optparse'
+options = {}
+
+opt_parser = OptionParser.new do |opts|
+	opts.banner = "Usage: interface-statistics [options]"
+	
+	opts.separator ""
+	
+	options[:format] = :text
+	opts.on("-f", "--format TYPE", [:text, :hash],
+		"Specify output format:", 
+		"text: simple text output", 
+		"hash: ruby hash output (useful for use in later ruby scripts)") do |format|
+	
+		options[:format] = format
+	end
+	
+end
+
+opt_parser.parse!(ARGV)
 
 # get input to parse
 #
@@ -36,10 +63,10 @@ lines = input.split("\n")
 assert(lines.length != 0        , "Command output empty")
 assert(lines.length % 6 == 0    , "Command output not expected length")
 
-puts "interface rx_bytes tx_bytes"
-
 # group lines into block of 6...each interface's results are on 6 lines 
 interfaces_lines = lines.each_slice(6).to_a
+
+interfaces_hash = {}
 
 # iterate over each interface's set of lines
 interfaces_lines.each do |interface_lines|
@@ -55,7 +82,18 @@ interfaces_lines.each do |interface_lines|
     assert(interface_lines[4] == expected_TX_line, "TX line not expected: #{expected_TX_line}")
     tx_bytes = interface_lines[5].split()[0].to_i
     
-    
-    puts "#{interface_name} #{rx_bytes} #{tx_bytes}"
+    interfaces_hash[interface_name] = { :rx_bytes => rx_bytes, :tx_bytes => tx_bytes };
 end
 
+# format output
+if options[:format] == :text
+	# print plain text ouput
+	puts "interface rx_bytes tx_bytes"
+
+	interfaces_hash.each_pair do |name, values|
+		puts "#{name} #{values[:rx_bytes]} #{values[:tx_bytes]}"
+	end
+else
+	# print ruby hash string
+	puts interfaces_hash
+end
