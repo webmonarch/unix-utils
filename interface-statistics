@@ -36,23 +36,26 @@ lines = input.split("\n")
 assert(lines.length != 0        , "Command output empty")
 assert(lines.length % 6 == 0    , "Command output not expected length")
 
+puts "interface rx_bytes tx_bytes"
+
 # group lines into block of 6...each interface's results are on 6 lines 
 interfaces_lines = lines.each_slice(6).to_a
 
 # iterate over each interface's set of lines
 interfaces_lines.each do |interface_lines|
-    # sanity check RX line
+    interface_name = interface_lines[0].split()[1].chomp(":")
+
+    # sanity check and get RX
     expected_RX_line = "    RX: bytes  packets  errors  dropped overrun mcast   "
     assert(interface_lines[2] == expected_RX_line, "RX line not expected: #{expected_RX_line}")
+    rx_bytes = interface_lines[3].split()[0].to_i
        
-    # sanity check TX line
+    # sanity check and get TX
     expected_TX_line = "    TX: bytes  packets  errors  dropped carrier collsns "
     assert(interface_lines[4] == expected_TX_line, "TX line not expected: #{expected_TX_line}")
+    tx_bytes = interface_lines[5].split()[0].to_i
     
-    interface_name = interface_lines[0].split()[1].chomp(":")
-    tx_bytes = interface_lines[3].split()[0].to_i
-    rx_bytes = interface_lines[5].split()[0].to_i
     
-    puts "#{interface_name} #{tx_bytes} #{rx_bytes}"
+    puts "#{interface_name} #{rx_bytes} #{tx_bytes}"
 end
 
