@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+
+# Script for logging interface usage statistics for later review and/or analysis
+#
+# Internally, this script uses `interface-statistics` to report receive and 
+# transmit statistics about each interface.
+
+
+def assert(should_be_true, message)
+    if !should_be_true
+        STDERR.puts message
+        exit(false)
+    end
+end
+
+
+#
+# get interface-statistics output to parse
+#
+# try reading from stdin (for debugging/testing)
+# otherwise invoke `interface-statistics` directly
+#
+
+if STDIN.tty? || ARGF.eof?
+    # no pip-ed input...invoke directly
+    interface_statistics_output = `./interface-statistics -f hash`
+    
+    assert($?.exitstatus == 0, "Command failed.")
+else
+    interface_statistics_output = ARGF.read    
+end
+
+
+#
+# Parse the interface-statistics output
+#
+
+# parse output into hash
+interface_statistics_hash = eval interface_statistics_output
+
+assert(interface_statistics_hash.instance_of?(Hash), "Command output not expected ruby Hash")
+
+#
+# Format output
+#
+
+stats = interface_statistics_hash["eth0"]
+puts [Time.now, stats[:rx_bytes], stats[:tx_bytes]].join(", ")
