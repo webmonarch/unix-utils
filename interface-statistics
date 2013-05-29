@@ -46,7 +46,7 @@ opt_parser.parse!(ARGV)
 # try reading from stdin
 # otherwise invoke ip -s link directly
 
-if STDIN.tty?
+if STDIN.tty? || ARGF.eof?
     # no pip-ed input...invoke directly
     cmd = "ip -s link"
     input = `#{cmd}`
