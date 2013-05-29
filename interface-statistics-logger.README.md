@@ -1,4 +1,7 @@
-rrdtool create interface_statistics.rrd \
-	-s 10 \
-	DS:eth0_rx_bytes:DERIVE:30:0:104857600 \
-	RRA:AVERAGE:0.5:1:10
+7 days =   604800 s
+1 mon  =  2628000 s
+1 year = 31536000 s
+
+7 days  @ 10 sec ==  60480 samples
+1 month @ 1 min  ==  43800 samples
+1 year  @ 5 min  == 105120 samples
