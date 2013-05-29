@@ -13,6 +13,38 @@ def assert(should_be_true, message)
     end
 end
 
+#
+# Parse command options
+#
+
+require 'optparse'
+
+opt_interfaces = []
+opt_rrdfile = nil
+
+opt_parser = OptionParser.new do |opts|
+	opts.banner = "Usage: interface-statistics [options]"
+	
+	opts.on("-d", "--database RRDFILE", "Specify the RRD database file") do |file|
+	    opt_rrdfile = file
+	end
+	
+	opts.on("-i", "--interfaces IF1[,IF2]", Array,
+		"List of interface names to record in the logger") do |interfaces|
+	
+		opt_interfaces = interfaces
+	end
+	
+end
+
+opt_parser.parse!(ARGV)
+
+# validate params
+assert(opt_rrdfile, "No RRD file specified")
+assert(File.exist?(opt_rrdfile), "Specified RRD file doesn't exist")
+
+assert(opt_interfaces.length > 0, "No interface names specified")
+
 
 #
 # get interface-statistics output to parse
@@ -40,9 +72,18 @@ interface_statistics_hash = eval interface_statistics_output
 
 assert(interface_statistics_hash.instance_of?(Hash), "Command output not expected ruby Hash")
 
-#
-# Format output
-#
+rrd_fields = []
+rrd_values = ["N"]
+opt_interfaces.each do |ifname|
+    assert(interface_statistics_hash.has_key?(ifname), "Interface #{ifname} not found")
+    
+    [:rx_bytes, :tx_bytes].each do |f|
+        rrd_fields << "ifname_#{f}"
+        rrd_values << interface_statistics_hash[ifname][f]
+    end
 
-stats = interface_statistics_hash["eth0"]
-puts [Time.now, stats[:rx_bytes], stats[:tx_bytes]].join(", ")
+end
+
+cmd = "rrdtool update #{opt_rrdfile} --template #{rrd_fields.join(':')} #{rrd_values.join(':')}"
+puts "#{cmd}"
+assert($?.exitstatus == 0, "rrdtool update failed.")
