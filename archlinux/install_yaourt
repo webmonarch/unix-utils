@@ -14,7 +14,7 @@ mkdir -p "$PACKAGE_QUERY_BUILD_DIR"
 echo Building package-query in $PACKAGE_QUERY_BUILD_DIR
 
 cd $PACKAGE_QUERY_BUILD_DIR
-wget 'http://aur.archlinux.org/packages/pa/package-query/PKGBUILD'
+wget -O PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=package-query'
 makepkg -s
 sudo pacman -U *.pkg.*
 
@@ -24,6 +24,6 @@ sudo pacman -U *.pkg.*
 echo Building yaourt in $YAOURT_BUILD_DIR
 
 cd $YAOURT_BUILD_DIR
-wget 'http://aur.archlinux.org/packages/ya/yaourt/PKGBUILD'
+wget -O PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=yaourt'
 makepkg -s
 sudo pacman -U *.pkg.*
